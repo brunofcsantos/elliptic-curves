@@ -12,7 +12,8 @@ members = [
     "p521",
     "primefield",
     "primeorder",
-    "sm2"
+    "sm2",
+    "signing_example"
 ]
 
 [profile.dev]
