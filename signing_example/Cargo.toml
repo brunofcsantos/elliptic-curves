@@ -40,3 +40,27 @@ path = "src/create_keys_p384.rs"
 [[bin]]
 name = "create_keys_p521"
 path = "src/create_keys_p521.rs"
+
+[[bin]]
+name = "sign_memory_p256"
+path = "src/sign_memory_p256.rs"
+
+[[bin]]
+name = "sign_memory_p384"
+path = "src/sign_memory_p384.rs"
+
+[[bin]]
+name = "sign_memory_p521"
+path = "src/sign_memory_p521.rs"
+
+# [[bin]]
+# name = "verify_memory_p256"
+# path = "src/verify_memory_p256.rs"
+
+# [[bin]]
+# name = "verify_memory_p384"
+# path = "src/verify_memory_p384.rs"
+
+# [[bin]]
+# name = "verify_memory_p521"
+# path = "src/verify_memory_p521.rs"
