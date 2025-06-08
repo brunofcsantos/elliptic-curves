@@ -24,8 +24,8 @@ echo "Wrote to $FOLDER/sign_memory_p384.txt"
 # Signing with key P521
 FOLDER="$SCRIPT_DIR/../target/criterion/P521/memory"
 mkdir -p "$FOLDER"
-valgrind --tool=massif --stacks=yes --massif-out-file="$FOLDER/verify_memory_p521.txt" "$SCRIPT_DIR/../target/release/verify_memory_p521" > "$FOLDER/verify_memory_p521.txt"
-echo "Wrote to $FOLDER/verify_memory_p521.txt"
+valgrind --tool=massif --stacks=yes --massif-out-file="$FOLDER/sign_memory_p521.txt" "$SCRIPT_DIR/../target/release/sign_memory_p521" > "$FOLDER/sign_memory_p521.txt"
+echo "Wrote to $FOLDER/sign_memory_p521.txt"
 
 
 
