@@ -3,6 +3,7 @@ use p256::{
     ecdsa::{signature::Signer, Signature, SigningKey},
     SecretKey,
 };
+use rand_core::OsRng;
 use p256::ecdsa::signature::Verifier;
 use hex::FromHex;
 
@@ -19,13 +20,13 @@ pub fn comparisons_signing(c: &mut Criterion<CpuCycles>) {
 
     let hex_key = "69624171561a63340de0e7d869f2a05492558e1a04868b6a9f854a866788188d";
 
-    let private_key_bytes = <[u8; 32]>::from_hex(hex_key).expect("Invalid hex private key");
+    let private_key_bytes = <[u8; 32]>::from_hex(hex_key).expect("");
 
-    let secret_key = SecretKey::from_bytes((&private_key_bytes).into()).expect("Invalid private key bytes");
+    let secret_key = SecretKey::from_bytes((&private_key_bytes).into()).expect("");
 
     let signing_key = SigningKey::from(secret_key);
 
-    let message = b"example message";
+    let message = b"example";
 
     group.bench_function("sign", move |b| {
         b.iter(|| {
@@ -46,23 +47,35 @@ pub fn comparisons_verifying(c: &mut Criterion<CpuCycles>) {
 
     let message = b"example message";
 
-    let public_key_bytes = <[u8; 65]>::from_hex(public_key_hex).expect("Invalid public key hex");
+    let public_key_bytes = <[u8; 65]>::from_hex(public_key_hex).expect("");
 
     let verifying_key = p256::ecdsa::VerifyingKey::from_sec1_bytes(&public_key_bytes)
-        .expect("Invalid public key bytes");
+        .expect("");
 
-    let signature_bytes = Vec::from_hex(signature_hex).expect("Invalid signature hex");
-    let signature = Signature::from_der(&signature_bytes).expect("Invalid DER signature");
+    let signature_bytes = Vec::from_hex(signature_hex).expect("");
+    let signature = Signature::from_der(&signature_bytes).expect("");
 
     group.bench_function("verify", |b| {
         b.iter(|| {
-            verifying_key.verify(message, &signature).expect("verification failed");
+            verifying_key.verify(message, &signature).expect("");
         })
     });
 
     group.finish();
 }
 
+pub fn comparisons_generate_key(c: &mut Criterion<CpuCycles>) {
+    let mut group = c.benchmark_group("P256");
+    group.measurement_time(Duration::from_secs(10));
+
+    group.bench_function("generate_key", |b| {
+        b.iter(|| {
+            let _signing_key = SigningKey::try_from_rng(&mut OsRng).unwrap();
+        })
+    });
+
+    group.finish();
+}
 
 pub fn comparisons(c: &mut Criterion<CpuCycles>) {
     let num_cpus = unsafe {
@@ -74,12 +87,13 @@ pub fn comparisons(c: &mut Criterion<CpuCycles>) {
     };
 
     let mut cpuset = CpuSet::new();
-    cpuset.set(num_cpus - 1).expect("Failed to set CPU in cpuset");
+    cpuset.set(num_cpus - 1).expect("");
 
-    sched_setaffinity(Pid::from_raw(0), &cpuset).expect("Failed to set CPU affinity");
+    sched_setaffinity(Pid::from_raw(0), &cpuset).expect("");
 
     comparisons_signing(c);
     comparisons_verifying(c);
+    comparisons_generate_key(c);
 }
 
 criterion_group!(

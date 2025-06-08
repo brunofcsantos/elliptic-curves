@@ -53,14 +53,14 @@ path = "src/sign_memory_p384.rs"
 name = "sign_memory_p521"
 path = "src/sign_memory_p521.rs"
 
-# [[bin]]
-# name = "verify_memory_p256"
-# path = "src/verify_memory_p256.rs"
+[[bin]]
+name = "verify_memory_p256"
+path = "src/verify_memory_p256.rs"
 
-# [[bin]]
-# name = "verify_memory_p384"
-# path = "src/verify_memory_p384.rs"
+[[bin]]
+name = "verify_memory_p384"
+path = "src/verify_memory_p384.rs"
 
-# [[bin]]
-# name = "verify_memory_p521"
-# path = "src/verify_memory_p521.rs"
+[[bin]]
+name = "verify_memory_p521"
+path = "src/verify_memory_p521.rs"

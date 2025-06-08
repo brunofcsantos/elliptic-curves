@@ -3,6 +3,7 @@ use p521::{
     ecdsa::{signature::Signer, Signature, SigningKey},
     SecretKey,
 };
+use rand_core::OsRng;
 use p521::ecdsa::signature::Verifier;
 use hex::FromHex;
 
@@ -19,13 +20,13 @@ pub fn comparisons_signing(c: &mut Criterion<CpuCycles>) {
 
     let hex_key = "004cd18fb54d41542d43c1fc8957aff5590c9e76d48570d390aca50b9f199442a0ecbc57b2117c9127efbd94eb724035aec08f231ff1e66b370d5d0f620ba61cd8b4";
 
-    let private_key_bytes: [u8; 66] = <[u8; 66]>::from_hex(hex_key).expect("Invalid hex private key");
+    let private_key_bytes: [u8; 66] = <[u8; 66]>::from_hex(hex_key).expect("");
 
-    let secret_key = SecretKey::from_bytes((&private_key_bytes).into()).expect("Invalid private key bytes");
+    let secret_key = SecretKey::from_bytes((&private_key_bytes).into()).expect("");
 
     let signing_key = SigningKey::from(secret_key);
 
-    let message = b"example message";
+    let message = b"example";
 
     group.bench_function("sign", move |b| {
         b.iter(|| {
@@ -46,19 +47,32 @@ pub fn comparisons_verifying(c: &mut Criterion<CpuCycles>) {
 
     let message = b"example message";
 
-    let public_key_vec = Vec::from_hex(public_key_hex).expect("Invalid public key hex");
-    let public_key_bytes: [u8; 133] = public_key_vec.try_into().expect("Invalid length for public key");
+    let public_key_vec = Vec::from_hex(public_key_hex).expect("");
+    let public_key_bytes: [u8; 133] = public_key_vec.try_into().expect("");
     
 
     let verifying_key = p521::ecdsa::VerifyingKey::from_sec1_bytes(&public_key_bytes)
-        .expect("Invalid public key bytes");
+        .expect("");
 
-    let signature_bytes = Vec::from_hex(signature_hex).expect("Invalid signature hex");
-    let signature = Signature::from_der(&signature_bytes).expect("Invalid DER signature");
+    let signature_bytes = Vec::from_hex(signature_hex).expect("");
+    let signature = Signature::from_der(&signature_bytes).expect("");
 
     group.bench_function("verify", |b| {
         b.iter(|| {
-            verifying_key.verify(message, &signature).expect("verification failed");
+            verifying_key.verify(message, &signature).expect("");
+        })
+    });
+
+    group.finish();
+}
+
+pub fn comparisons_generate_key(c: &mut Criterion<CpuCycles>) {
+    let mut group = c.benchmark_group("P521");
+    group.measurement_time(Duration::from_secs(10));
+
+    group.bench_function("generate_key", |b| {
+        b.iter(|| {
+            let _signing_key = SigningKey::try_from_rng(&mut OsRng).unwrap();
         })
     });
 
@@ -76,12 +90,13 @@ pub fn comparisons(c: &mut Criterion<CpuCycles>) {
     };
 
     let mut cpuset = CpuSet::new();
-    cpuset.set(num_cpus - 1).expect("Failed to set CPU in cpuset");
+    cpuset.set(num_cpus - 1).expect("");
 
-    sched_setaffinity(Pid::from_raw(0), &cpuset).expect("Failed to set CPU affinity");
+    sched_setaffinity(Pid::from_raw(0), &cpuset).expect("");
 
     comparisons_signing(c);
     comparisons_verifying(c);
+    comparisons_generate_key(c);
 }
 
 criterion_group!(
